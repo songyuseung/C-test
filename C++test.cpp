@@ -1,20 +1,161 @@
-﻿// C++test.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
+﻿#include <iostream>
+#include <cstring>
 
-#include <iostream>
+using namespace std;        
+const int NAME_LEN = 20;                                            // 고객 이름 길이 (한글 한 문자는 2 바이트)
+const int MAX_CUS_NUM = 100;                                        // 최대 고객 수
 
-int main()
+void ShowMenu(void);                                                // 메뉴 출력을 위한 함수
+void MakeAccount(void);                                             // 계좌 개설을 위한 함수 
+void DepositMoney(void);                                            // 입금을 위한 함수
+void WithdrawMoney(void);                                           // 출금을 위한 함수
+void ShowAllAccInfo(void);                                          // 모든 계좌 정보 출력을 위한 함수
+
+enum { MAKE = 1, DEPOSIT, WITHDRAW, INQUIRE, EXIT };                // 열거형 이름 생략 가능
+
+typedef struct                                                      // 구조체 이름 생략 가능
 {
-    std::cout << "Hello World!\n";
+    int accID;                                                      // 계좌 번호
+    int balance;                                                    // 잔액
+    char cusName[NAME_LEN];                                         // 고객 이름
+} ACCOUNT;
+
+
+ACCOUNT account[MAX_CUS_NUM];
+int accNum = 0;                                                     // 계좌 인덱스
+
+
+int main(void)
+{
+    int choice;
+
+    while (1)
+    {
+        ShowMenu();
+
+        cout << "선택: ";
+        cin >> choice;
+        cout << endl;
+
+        switch (choice)
+        {
+        case MAKE:
+            MakeAccount();
+            break;
+        case DEPOSIT:
+            DepositMoney();
+            break;
+        case WITHDRAW:
+            WithdrawMoney();
+            break;
+        case INQUIRE:
+            ShowAllAccInfo();
+            break;
+        case EXIT:
+            return 0;
+        default:
+            cout << "잘못된 입력 입니다." << endl;
+
+        }
+    }
+
+    system("pause");
+
+    return 0;
 }
 
-// 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
-// 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
 
-// 시작을 위한 팁: 
-//   1. [솔루션 탐색기] 창을 사용하여 파일을 추가/관리합니다.
-//   2. [팀 탐색기] 창을 사용하여 소스 제어에 연결합니다.
-//   3. [출력] 창을 사용하여 빌드 출력 및 기타 메시지를 확인합니다.
-//   4. [오류 목록] 창을 사용하여 오류를 봅니다.
-//   5. [프로젝트] > [새 항목 추가]로 이동하여 새 코드 파일을 만들거나, [프로젝트] > [기존 항목 추가]로 이동하여 기존 코드 파일을 프로젝트에 추가합니다.
-//   6. 나중에 이 프로젝트를 다시 열려면 [파일] > [열기] > [프로젝트]로 이동하고 .sln 파일을 선택합니다.
+void ShowMenu(void)
+{
+    cout << endl;
+    cout << "------------------Menu------------------" << endl;
+    cout << "1. 계좌 개설" << endl;
+    cout << "2. 입금" << endl;
+    cout << "3. 츨금" << endl;
+    cout << "4. 계좌 정보 전체 출력" << endl;
+    cout << "5. 프로그램 종료" << endl << endl;
+}
+
+void MakeAccount(void)
+{
+    cout << endl;
+    cout << "[계좌 개설]" << endl;
+    cout << "계좌 ID: ";
+    cin >> account[accNum].accID;
+    cout << "이름: ";
+    cin >> account[accNum].cusName;
+    cout << "입금액: ";
+    cin >> account[accNum].balance;
+
+    accNum++;
+}
+
+void DepositMoney(void)
+{
+    int id;
+    int money;
+
+    cout << endl;
+    cout << "[입금]" << endl;
+    cout << "계좌 ID: ";
+    cin >> id;
+
+    for (int i = 0; i < accNum; i++)
+    {
+        if (account[i].accID == id)
+        {
+            cout << "입금액: ";
+            cin >> money;
+            account[i].balance += money;
+            cout << "입금 완료: " << endl;
+            return;
+        }
+    }
+    cout << "잘못된 계좌 번호 입력. " << endl;
+}
+
+void WithdrawMoney(void)
+{
+    int id;
+    int money;
+
+    cout << endl;
+    cout << "[출금]" << endl;
+    cout << "계좌 ID: ";
+    cin >> id;
+
+    for (int i = 0; i < accNum; i++)
+    {
+        if (account[i].accID == id)
+        {
+            cout << "출금액: ";
+            cin >> money;
+            if (account[i].balance < money)
+            {
+                cout << "잔액 부족." << endl;
+                return;
+            }
+            else
+            {
+                account[i].balance -= money;
+                cout << "출금 완료: " << endl;
+                return;
+            }
+        }
+    }
+    cout << "잘못된 계좌 번호 입력. " << endl;
+}
+
+void ShowAllAccInfo(void)
+{
+    cout << endl;
+    cout << "[계좌 정보]" << endl;
+
+    for (int i = 0; i < accNum; i++)
+    {
+        cout << "계좌 ID: " << account[i].accID << endl;
+        cout << "이름 : " << account[i].cusName << endl;
+        cout << "잔액: " << account[i].balance << endl;
+        cout << endl;
+    }
+}
